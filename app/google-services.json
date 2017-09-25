@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "145765284794",
+    "firebase_url": "https://todo-list-f1d17.firebaseio.com",
+    "project_id": "todo-list-f1d17",
+    "storage_bucket": "todo-list-f1d17.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145765284794:android:95f15d7e58e75897",
+        "android_client_info": {
+          "package_name": "com.example.aac088.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "145765284794-afl36cfe2ljc4rio4f21ms6lq9bu9rfi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aac088.chatapp",
+            "certificate_hash": "30b2762c2a03e57951337932116b136437c9afef"
+          }
+        },
+        {
+          "client_id": "145765284794-v074785c2ee9et2hc8lchqran2v6jt6b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcUvLuKAwILzeJsnkkQvEkMSM8mcRPRUU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "145765284794-v074785c2ee9et2hc8lchqran2v6jt6b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
