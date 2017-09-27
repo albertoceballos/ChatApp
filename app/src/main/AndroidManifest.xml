@@ -33,8 +33,10 @@
         <activity
             android:name=".StatusActivity"
             android:parentActivityName=".SettingsActivity" />
-        <activity android:name=".AllUsersActivity"
-            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".AllUsersActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>
