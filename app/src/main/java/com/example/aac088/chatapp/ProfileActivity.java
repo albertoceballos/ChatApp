@@ -101,6 +101,10 @@ public class ProfileActivity extends AppCompatActivity {
                 if(CURRENT_STATE.equals("not_friends")){
                     SendFriendRequest();
                 }
+
+                if(CURRENT_STATE.equals("request_sent")){
+                    CancelFriendRequest();
+                }
             }
         });
 
@@ -110,6 +114,28 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void CancelFriendRequest() {
+        friendRequestReference.child(sender_user_id).child(reciever_user_id).removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            friendRequestReference.child(reciever_user_id).child(sender_user_id).removeValue()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful()){
+                                                sendRequestbtn.setEnabled(true);
+                                                CURRENT_STATE="not_friends";
+                                                sendRequestbtn.setText("Send Friend Request");
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
     }
 
     private void SendFriendRequest() {
