@@ -1,5 +1,7 @@
 package com.example.aac088.chatapp;
 
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.Calendar;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +28,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView profile_image;
 
     private DatabaseReference usersReference;
+    private DatabaseReference friendsReference;
 
     private String CURRENT_STATE;
 
@@ -55,6 +59,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         usersReference = FirebaseDatabase.getInstance().getReference().child("Users");
 
+        friendsReference = FirebaseDatabase.getInstance().getReference().child("Friends");
+
         usersReference.child(reciever_user_id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -69,13 +75,19 @@ public class ProfileActivity extends AppCompatActivity {
                 friendRequestReference.child(sender_user_id).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.hasChild(reciever_user_id)){
-                            String req_type = dataSnapshot.child(reciever_user_id).child("request_type").getValue().toString();
+                        if(dataSnapshot.exists()){
+                            if(dataSnapshot.hasChild(reciever_user_id)){
+                                String req_type = dataSnapshot.child(reciever_user_id).child("request_type").getValue().toString();
 
-                            if(req_type.equals("sent")){
-                                CURRENT_STATE = "request_sent";
+                                if(req_type.equals("sent")){
+                                    CURRENT_STATE = "request_sent";
 
-                                sendRequestbtn.setText("Cancel Friend Request");
+                                    sendRequestbtn.setText("Cancel Friend Request");
+                                }
+                                else if(req_type.equals("received")){
+                                    CURRENT_STATE = "request_received";
+                                    sendRequestbtn.setText("Accept Friend Request");
+                                }
                             }
                         }
                     }
@@ -105,6 +117,9 @@ public class ProfileActivity extends AppCompatActivity {
                 if(CURRENT_STATE.equals("request_sent")){
                     CancelFriendRequest();
                 }
+                if(CURRENT_STATE.equals("request_received")){
+                    AcceptFriendRequest();
+                }
             }
         });
 
@@ -114,6 +129,44 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void AcceptFriendRequest() {
+        Calendar callForDate = Calendar.getInstance();
+        SimpleDateFormat currentDate = new SimpleDateFormat("dd-MMMM-yyyy");
+        final String saveCurrentDate = currentDate.format(callForDate.getTime());
+
+        friendsReference.child(sender_user_id).child(reciever_user_id).setValue(saveCurrentDate)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        friendsReference.child(reciever_user_id).child(sender_user_id).setValue(saveCurrentDate)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        friendRequestReference.child(sender_user_id).child(reciever_user_id).removeValue()
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if(task.isSuccessful()){
+                                                            friendRequestReference.child(reciever_user_id).child(sender_user_id).removeValue()
+                                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                            if(task.isSuccessful()){
+                                                                                sendRequestbtn.setEnabled(true);
+                                                                                CURRENT_STATE="friends";
+                                                                                sendRequestbtn.setText("Unfriend this person");
+                                                                            }
+                                                                        }
+                                                                    });
+                                                        }
+                                                    }
+                                                });
+                                    }
+                                });
+                    }
+                });
     }
 
     private void CancelFriendRequest() {
@@ -143,7 +196,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
-                    friendRequestReference.child(reciever_user_id).child(sender_user_id).child("request_type").setValue("reciever").addOnCompleteListener(new OnCompleteListener<Void>() {
+                    friendRequestReference.child(reciever_user_id).child(sender_user_id).child("request_type").setValue("received").addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful()){
