@@ -17,6 +17,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class RegisterActivity extends AppCompatActivity {
     private Toolbar toolbar;
@@ -97,6 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
+                            String device_token = FirebaseInstanceId.getInstance().getToken();
                             //Gets user ID
                             String current_user_id = mAuth.getCurrentUser().getUid();
 
@@ -106,6 +108,7 @@ public class RegisterActivity extends AppCompatActivity {
                             //Store Data to FirebaseDB
                             storeUserDefaultDataReference.child("user_name").setValue(display_name_str);
                             storeUserDefaultDataReference.child("user_status").setValue("Hey there, I am using BoostChat!");
+                            storeUserDefaultDataReference.child("device_token").setValue(device_token);
                             storeUserDefaultDataReference.child("user_image").setValue("default_img_user");
                             storeUserDefaultDataReference.child("user_thumb_image").setValue("default_image")
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
