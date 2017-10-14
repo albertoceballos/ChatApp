@@ -80,7 +80,6 @@ public class ProfileActivity extends AppCompatActivity {
                 friendRequestReference.child(sender_user_id).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
                             if(dataSnapshot.hasChild(reciever_user_id)){
                                 String req_type = dataSnapshot.child(reciever_user_id).child("request_type").getValue().toString();
 
@@ -107,7 +106,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     });
                                 }
                             }
-                        }else{
+                        else{
                             friendsReference.child(sender_user_id)
                                     .addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
@@ -226,11 +225,11 @@ public class ProfileActivity extends AppCompatActivity {
         SimpleDateFormat currentDate = new SimpleDateFormat("dd-MMMM-yyyy");
         final String saveCurrentDate = currentDate.format(callForDate.getTime());
 
-        friendsReference.child(sender_user_id).child(reciever_user_id).setValue(saveCurrentDate)
+        friendsReference.child(sender_user_id).child(reciever_user_id).child("date").setValue(saveCurrentDate)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        friendsReference.child(reciever_user_id).child(sender_user_id).setValue(saveCurrentDate)
+                        friendsReference.child(reciever_user_id).child(sender_user_id).child("date").setValue(saveCurrentDate)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
