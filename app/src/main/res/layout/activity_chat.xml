@@ -19,6 +19,13 @@
         android:theme="?attr/actionBarTheme"
         app:titleTextColor="@android:color/background_light" />
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/messages_list_users"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linearLayout"
+        android:layout_below="@+id/chat_toolbar"></android.support.v7.widget.RecyclerView>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,17 +33,18 @@
         android:layout_alignParentStart="true"
         android:background="@android:color/background_light"
         android:orientation="horizontal"
-        android:padding="5dp">
+        android:padding="5dp"
+        android:id="@+id/linearLayout">
 
-        <ImageView
-            android:id="@+id/select_image"
+        <ImageButton
+            android:id="@+id/chat_select_image"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:padding="5dp"
             android:src="@drawable/ic_select_image_to_send" />
 
         <EditText
-            android:id="@+id/input_message"
+            android:id="@+id/chat_input_message"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -45,8 +53,8 @@
             android:inputType="textMultiLine"
             android:padding="10dp" />
 
-        <ImageView
-            android:id="@+id/send_message"
+        <ImageButton
+            android:id="@+id/chat_send_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
