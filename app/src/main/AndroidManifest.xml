@@ -7,25 +7,18 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".Offline"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".Offline">
-
-
-        <service
-            android:name=".FirebaseMessagingService">
+        android:theme="@style/AppTheme">
+        <service android:name=".FirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_ENVENT"></action>
+                <action android:name="com.google.firebase.MESSAGING_ENVENT" />
             </intent-filter>
-
         </service>
-
-
-
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -50,15 +43,15 @@
         <activity
             android:name=".AllUsersActivity"
             android:parentActivityName=".MainActivity" />
-
         <activity android:name=".ProfileActivity">
             <intent-filter>
-                <action android:name="com.example.aac088.chatapp_TARGET_NOTIFICATION"></action>
-                <category android:name="android.intent.category.DEFAULT"></category>
+                <action android:name="com.example.aac088.chatapp_TARGET_NOTIFICATION" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-
+        <activity android:name=".ChatActivity"
+            android:parentActivityName=".MainActivity"></activity>
     </application>
 
 </manifest>

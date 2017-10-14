@@ -2,8 +2,11 @@ package com.example.aac088.chatapp;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,11 +16,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -74,22 +79,65 @@ public class FriendsFragment extends Fragment {
             protected void populateViewHolder(final FriendsViewHolder viewHolder, Friends model, int position) {
                 viewHolder.setDate(model.getDate());
 
-                String list_user_id = getRef(position).getKey();
+                final String list_user_id = getRef(position).getKey();
 
                 userReference.child(list_user_id).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String userName = dataSnapshot.child("user_name").getValue().toString();
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
+                       final String userName = dataSnapshot.child("user_name").getValue().toString();
                         String thumb_image = dataSnapshot.child("user_thumb_image").getValue().toString();
 
                         if(dataSnapshot.hasChild("online")){
-                            Boolean online_status = (Boolean) dataSnapshot.child("online").getValue();
+                            String online_status = dataSnapshot.child("online").getValue().toString();
 
                             viewHolder.setUserOnline(online_status);
                         }
 
                         viewHolder.setUsername(userName);
                         viewHolder.setThumbImage(thumb_image, getContext());
+
+                        viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                CharSequence options[] = new CharSequence[]{
+                                        userName + "'s Profile",
+                                        "Send Message"
+                                };
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                builder.setTitle("Select Option");
+                                builder.setItems(options, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int position) {
+                                            if(position ==0){
+                                                Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
+                                                profileIntent.putExtra("visit_user_id",list_user_id);
+                                                startActivity(profileIntent);
+                                            }
+                                        if(position ==1){
+                                            if(dataSnapshot.child("online").exists()){
+                                                Intent chatIntent = new Intent(getContext(), ChatActivity.class);
+                                                chatIntent.putExtra("visit_user_id",list_user_id);
+                                                chatIntent.putExtra("user_name",userName);
+                                                startActivity(chatIntent);
+                                            }else{
+                                                userReference.child(list_user_id).child("online").setValue(ServerValue.TIMESTAMP)
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Intent chatIntent = new Intent(getContext(), ChatActivity.class);
+                                                        chatIntent.putExtra("visit_user_id",list_user_id);
+                                                        chatIntent.putExtra("user_name",userName);
+                                                        startActivity(chatIntent);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+                                });
+                                builder.show();
+                            }
+                        });
                     }
 
                     @Override
@@ -140,10 +188,10 @@ public class FriendsFragment extends Fragment {
                     });
         }
 
-        public void setUserOnline(Boolean online_status) {
+        public void setUserOnline(String online_status) {
             ImageView onlineStatusView = (ImageView) mView.findViewById(R.id.online_status);
 
-            if(online_status == true){
+            if(online_status.equals("true")){
                 onlineStatusView.setVisibility(View.VISIBLE);
             }else{
                 onlineStatusView.setVisibility(View.INVISIBLE);
